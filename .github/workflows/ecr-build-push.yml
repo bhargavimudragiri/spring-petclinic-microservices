@@ -1,0 +1,32 @@
+name: Build and Push Config Server to ECR
+on:
+  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::866481181845:role/GitHubActions-Petclinic-ECR
+          aws-region: us-east-1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Build and push Config Server image
+        run: |
+          ./mvnw -pl spring-petclinic-config-server -am clean package -DskipTests
+
+          docker build \
+            -f docker/Dockerfile \
+            --build-arg ARTIFACT_NAME=spring-petclinic-config-server-4.0.1 \
+            --build-arg EXPOSED_PORT=8888 \
+            -t 866481181845.dkr.ecr.us-east-1.amazonaws.com/petclinic-config-server:latest \
+            spring-petclinic-config-server/target
+
+          docker push 866481181845.dkr.ecr.us-east-1.amazonaws.com/petclinic-config-server:latest
