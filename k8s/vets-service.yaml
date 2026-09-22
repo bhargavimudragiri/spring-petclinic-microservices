@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vets-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vets-service
+  template:
+    metadata:
+      labels:
+        app: vets-service
+    spec:
+      containers:
+        - name: vets-service
+          image: 866481181845.dkr.ecr.us-east-1.amazonaws.com/petclinic-vets-service:latest
+
+          env:
+            - name: CONFIG_SERVER_URL
+              value: "http://config-server:8888/"
+
+          ports:
+            - containerPort: 8083
+
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vets-service
+spec:
+  selector:
+    app: vets-service
+  ports:
+    - port: 8083
+      targetPort: 8083
+  type: ClusterIP

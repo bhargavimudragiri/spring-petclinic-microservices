@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-server
+  template:
+    metadata:
+      labels:
+        app: admin-server
+    spec:
+      containers:
+        - name: admin-server
+          image: 866481181845.dkr.ecr.us-east-1.amazonaws.com/petclinic-admin-server:latest
+
+          env:
+            - name: CONFIG_SERVER_URL
+              value: "http://config-server:8888/"
+
+          ports:
+            - containerPort: 9090
+
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-server
+spec:
+  selector:
+    app: admin-server
+  ports:
+    - port: 9090
+      targetPort: 9090
+  type: ClusterIP

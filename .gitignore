@@ -21,3 +21,16 @@ target/
 generated/
 
 **/.DS_Store
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfplan
+
+# Local downloaded Helm charts
+*.tgz
+
+# Temporary EKS IAM trust policy
+ebs-csi-trust-policy.json
