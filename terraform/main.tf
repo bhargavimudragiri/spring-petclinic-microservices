@@ -229,3 +229,43 @@ resource "aws_eks_addon" "ebs_csi" {
     aws_eks_node_group.petclinic
   ]
 }
+
+# GitHub Actions permission to describe the EKS cluster
+resource "aws_iam_role_policy" "github_actions_eks" {
+  name = "GitHubActions-EKS-Deploy"
+  role = "GitHubActions-Petclinic-ECR"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:DescribeCluster"
+        ]
+        Resource = aws_eks_cluster.petclinic.arn
+      }
+    ]
+  })
+}
+
+# Allow GitHub Actions IAM role to authenticate to EKS
+resource "aws_eks_access_entry" "github_actions" {
+  cluster_name  = aws_eks_cluster.petclinic.name
+  principal_arn = "arn:aws:iam::866481181845:role/GitHubActions-Petclinic-ECR"
+
+  type = "STANDARD"
+}
+
+# Give GitHub Actions permission to deploy resources to EKS
+resource "aws_eks_access_policy_association" "github_actions" {
+  cluster_name  = aws_eks_cluster.petclinic.name
+  principal_arn = aws_eks_access_entry.github_actions.principal_arn
+
+  policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+}
