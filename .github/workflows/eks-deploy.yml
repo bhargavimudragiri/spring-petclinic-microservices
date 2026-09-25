@@ -26,11 +26,6 @@ jobs:
           aws eks update-kubeconfig \
             --region us-east-1 \
             --name petclinic-eks
-      - name: Configure default StorageClass
-        run: |
-          kubectl patch storageclass gp2 \
-            --type merge \
-            -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
       - name: Deploy Petclinic to EKS
         run: |
           kubectl apply -f k8s/
