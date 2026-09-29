@@ -1,0 +1,12 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: petclinic-kubernetes-monitoring
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+
+  configMapRef:
+    name: petclinic-dashboard
+    key: petclinic-kubernetes-monitoring.json

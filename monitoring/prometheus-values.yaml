@@ -1,0 +1,10 @@
+server:
+  persistentVolume:
+    enabled: true
+    storageClass: gp2
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+
+alertmanager:
+  enabled: false
