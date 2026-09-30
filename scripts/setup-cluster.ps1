@@ -5,6 +5,6 @@ aws eks update-kubeconfig `
   --name petclinic-eks `
   --profile petclinic-prod
 
-kubectl apply -f k8s/storageclass-default.yaml
+kubectl apply -f cluster/storageclass-default.yaml
 
 Write-Host "Cluster setup complete."
