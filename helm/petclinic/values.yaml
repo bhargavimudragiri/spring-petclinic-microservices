@@ -1,0 +1,87 @@
+aws:
+  region: us-east-1
+  accountId: "866481181845"
+  ecrRegistry: "866481181845.dkr.ecr.us-east-1.amazonaws.com"
+
+services:
+  config-server:
+    image: petclinic-config-server
+    port: 8888
+
+  discovery-server:
+    image: petclinic-discovery-server
+    port: 8761
+
+  customers-service:
+    image: petclinic-customers-service
+    port: 8081
+
+  visits-service:
+    image: petclinic-visits-service
+    port: 8082
+
+  vets-service:
+    image: petclinic-vets-service
+    port: 8083
+
+  admin-server:
+    image: petclinic-admin-server
+    port: 9090
+
+  api-gateway:
+    image: petclinic-api-gateway
+    port: 8080
+
+replicaCount: 1
+
+image:
+  tag: latest
+  pullPolicy: Always
+
+serviceAccount:
+  create: false
+  automount: true
+  annotations: {}
+  name: ""
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: petclinic.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs:
+    - name: gateway
+      sectionName: http
+  hostnames:
+    - petclinic.local
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+service:
+  type: ClusterIP
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
